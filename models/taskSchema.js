@@ -11,16 +11,14 @@ const TaskSchema = new mongoose.Schema(
     tagTitle: {
       type: String,
     },
-    tagColor: {
-      Bg: {
-        type: String,
-      },
-      text: {
-        type: String,
-      },
-      hero: {
-        type: String,
-      },
+    tagBg: {
+      type: String,
+    },
+    tagtext: {
+      type: String,
+    },
+    taghero: {
+      type: String,
     },
     status: {
       type: String,
