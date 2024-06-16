@@ -36,6 +36,7 @@ app.post("/create", async (req, res) => {
     taghero,
     status,
     dateOfCompilation,
+    userId,
   } = req.body;
 
   if (
@@ -46,7 +47,8 @@ app.post("/create", async (req, res) => {
     !tagtext ||
     !taghero ||
     !status ||
-    !dateOfCompilation
+    !dateOfCompilation ||
+    !userId
   ) {
     return res
       .status(400)
@@ -63,6 +65,7 @@ app.post("/create", async (req, res) => {
     taghero,
     status,
     dateOfCompilation,
+    userId,
   });
 
   try {
@@ -80,13 +83,28 @@ app.post("/create", async (req, res) => {
       .json({ success: false, message: "Internal Server Error" });
   }
 });
-app.get("/", async (req, res) => {
+app.post("/", async (req, res) => {
+  const { userId } = req.body;
+  console.log("userId:", userId);
+
   try {
-    const tasks = await Task.find();
-    console.log("get", tasks);
-    res.json({ success: true, tasks });
+    if (userId) {
+      const tasks = await Task.find({ userId });
+      console.log("Fetched tasks:", tasks);
+
+      if (tasks.length > 0) {
+        res.json({ success: true, tasks });
+      } else {
+        res.json({ success: false, message: "No tasks found for the user." });
+      }
+    } else {
+      res
+        .status(400)
+        .json({ success: false, message: "userId parameter is missing." });
+    }
   } catch (error) {
-    console.log("fetching data", error);
+    console.error("Error fetching data:", error);
+    res.status(500).json({ success: false, message: "Internal server error." });
   }
 });
 
