@@ -4,6 +4,7 @@ import Task from "./models/taskSchema.js";
 import cors from "cors";
 import History from "./models/deletedTask.js";
 import dotenv from "dotenv";
+import user from "./models/user.js";
 
 dotenv.config();
 console.log(`Your port is ${process.env.PORTS}`);
@@ -128,6 +129,55 @@ app.post("/delete", async (req, res) => {
     }
   } catch (error) {
     console.log("error in delete", error);
+  }
+});
+// ====================================================
+
+app.post("/signup", async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
+  try {
+    const existingUser = await user.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists",
+        user: existingUser,
+      });
+    }
+    const newUser = new user({ firstName, lastName, email, password });
+    if (newUser) {
+      const savedUser = await newUser.save();
+      res.status(201).json({ success: true, user: savedUser });
+    }
+  } catch (error) {
+    console.error("Error in signup:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error in signup",
+      error: error.message,
+    });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const findUser = await user.findOne({ email, password });
+
+    if (!findUser) {
+      return res.status(400).json({
+        success: false,
+        message: "check email and password it might be wrong",
+      });
+    }
+    res.status(200).json({ success: true, findUser });
+  } catch (error) {
+    console.error("Error in login:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error in login",
+      error: error.message,
+    });
   }
 });
 
