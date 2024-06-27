@@ -5,6 +5,7 @@ import cors from "cors";
 import History from "./models/deletedTask.js";
 import dotenv from "dotenv";
 import user from "./models/user.js";
+import AssinedTask from "./models/assinedTask.js";
 
 dotenv.config();
 console.log(`Your port is ${process.env.PORTS}`);
@@ -196,6 +197,130 @@ app.post("/login", async (req, res) => {
       message: "Error in login",
       error: error.message,
     });
+  }
+});
+
+app.post("/assinedtask/create", async (req, res) => {
+  const {
+    title,
+    content,
+    tagTitle,
+    tagBg,
+    tagtext,
+    taghero,
+    status,
+    dateOfCompilation,
+    userId,
+    assinedTo,
+    assiendName,
+    assiendUserId,
+    assiendDate,
+  } = req.body;
+
+  if (
+    !title ||
+    !content ||
+    !tagTitle ||
+    !tagBg ||
+    !tagtext ||
+    !taghero ||
+    !status ||
+    !dateOfCompilation ||
+    !userId ||
+    !assinedTo ||
+    !assiendDate
+  ) {
+    return res
+      .status(400)
+      .json({ success: false, message: "All fields are required" });
+  }
+
+  try {
+    const exist = await user.findOne({ email: assinedTo });
+    console.log("exist", exist);
+    if (!exist) {
+      return res.json({ success: false, message: "mail id does not exist" });
+    }
+
+    const NewAssignTask = new AssinedTask({
+      title,
+      content,
+      tagTitle,
+      tagBg,
+      tagtext,
+      taghero,
+      status,
+      dateOfCompilation,
+      userId,
+      assinedTo,
+      assiendName: `${exist?.firstName} ${exist?.lastName}`,
+      assiendUserId: exist?._id,
+      assiendDate,
+    });
+
+    await NewAssignTask.save();
+    return res.status(201).json({
+      success: true,
+      message: `New Task Assined to `,
+      tasks: NewAssignTask,
+    });
+  } catch (error) {
+    console.error("Error saving task:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+});
+
+app.post("/assinedtask/get", async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (userId) {
+      const fetchUser = await AssinedTask.find({ userId });
+      // console.log("assinedtask/get", fetchUser);
+      if (!fetchUser) {
+        return res.status(400).json({
+          success: false,
+          message: "user id not found to fetch assining tasks",
+        });
+      }
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: `New Task Assined to `,
+      tasks: fetchUser,
+    });
+  } catch (error) {
+    console.error("Error saving task:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+});
+
+app.post("/fetchAssignedTasks", async (req, res) => {
+  const { assignedUserId } = req.body;
+  console.log("fetchAssignedTasks", assignedUserId);
+  try {
+    if (assignedUserId) {
+      const findData = await AssinedTask.findOne({
+        assignedUserId: assignedUserId,
+      });
+
+      console.log("fetchAssignedTasks", findData);
+      // if (findData.length === 0) {
+      //   return res
+      //     .status(404)
+      //     .json({ success: false, message: "Data not found" });
+      // }  
+      // return res.json({ success: true, message: "Data found", tasks: findData });
+    }
+  } catch (error) {
+    console.error("Error fetching assigned tasks:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
   }
 });
 
