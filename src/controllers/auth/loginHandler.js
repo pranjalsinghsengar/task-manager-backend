@@ -4,7 +4,7 @@ const LoginHandler = async (req, res) => {
   const { email, password } = req.body;
   try {
     const findUser = await User.findOne({ email, password });
-
+    console.log(findUser);
     if (!findUser) {
       return res.status(400).json({
         success: false,

@@ -24,7 +24,7 @@ const TaskSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: "pending",
+      default: "New Task",
     },
     dateOfCompilation: {
       type: Date,
@@ -32,7 +32,23 @@ const TaskSchema = new mongoose.Schema(
     },
     userId: {
       type: String,
-      required: true,
+      default: null,
+    },
+    assinedBy: {
+      type: String,
+      default: null,
+    },
+    assinedTo: {
+      type: String,
+      default: null,
+    },
+    assiendName: {
+      type: String,
+      default: null,
+    },
+    assiendDate: {
+      type: String,
+      default: null,
     },
   },
   { timestamps: true }

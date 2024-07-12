@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const TaskSchema = new mongoose.Schema(
   {
@@ -32,17 +32,21 @@ const TaskSchema = new mongoose.Schema(
     },
     userId: {
       type: String,
-      required: true,
+      default: null,
+    },
+    assinedBy: {
+      type: Schema.Types.ObjectId,
+      default: null,
     },
     assinedTo: {
       type: String,
       default: null,
     },
-    assiendName: {
-      type: String,
+    assiendUserId: {
+      type: Schema.Types.ObjectId,
       default: null,
     },
-    assiendUserId: {
+    assiendName: {
       type: String,
       default: null,
     },

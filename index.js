@@ -39,7 +39,7 @@ app.post("/assinedtask/create", async (req, res) => {
     taghero,
     status,
     dateOfCompilation,
-    userId,
+    assinedBy,
     assinedTo,
     assiendDate,
   } = req.body;
@@ -53,7 +53,7 @@ app.post("/assinedtask/create", async (req, res) => {
     !taghero ||
     !status ||
     !dateOfCompilation ||
-    !userId ||
+    !assinedBy ||
     !assinedTo ||
     !assiendDate
   ) {
@@ -69,7 +69,7 @@ app.post("/assinedtask/create", async (req, res) => {
       return res.json({ success: false, message: "mail id does not exist" });
     }
 
-    const NewAssignTask = new AssinedTask({
+    const NewAssignTask = new Task({
       title,
       content,
       tagTitle,
@@ -78,7 +78,7 @@ app.post("/assinedtask/create", async (req, res) => {
       taghero,
       status,
       dateOfCompilation,
-      userId,
+      assinedBy,
       assinedTo,
       assiendName: `${exist?.firstName} ${exist?.lastName}`,
       assiendUserId: exist?._id,
@@ -99,11 +99,12 @@ app.post("/assinedtask/create", async (req, res) => {
   }
 });
 
-app.post("/assinedtask/get", async (req, res) => {
+app.post("/assinedtask/get/:userId", async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { userId } = req.params;
     if (userId) {
-      const fetchUser = await AssinedTask.find({ userId });
+      // const fetchUser = await AssinedTask.find({ assinedBy });
+      const fetchUser = await Task.find({ assinedBy: userId });
       // console.log("assinedtask/get", fetchUser);
       if (!fetchUser) {
         return res.status(400).json({
@@ -125,34 +126,34 @@ app.post("/assinedtask/get", async (req, res) => {
   }
 });
 
-app.post("/fetchAssignedTasks", async (req, res) => {
-  const { email } = req.body;
-  console.log("fetchAssignedTasks", email);
-  try {
-    if (email) {
-      const findData = await AssinedTask.findOne({
-        email: email,
-      });
+// app.post("/fetchAssignedTasks", async (req, res) => {
+//   const { email } = req.body;
+//   console.log("fetchAssignedTasks", email);
+//   try {
+//     if (email) {
+//       const findData = await AssinedTask.findOne({
+//         email: email,
+//       });
 
-      console.log("fetchAssignedTasks", findData);
-      if (findData.length === 0) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Data not found" });
-      }
-      return res.json({
-        success: true,
-        message: "Data found",
-        tasks: findData,
-      });
-    }
-  } catch (error) {
-    console.error("Error fetching assigned tasks:", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal Server Error" });
-  }
-});
+//       console.log("fetchAssignedTasks", findData);
+//       if (findData.length === 0) {
+//         return res
+//           .status(404)
+//           .json({ success: false, message: "Data not found" });
+//       }
+//       return res.json({
+//         success: true,
+//         message: "Data found",
+//         tasks: findData,
+//       });
+//     }
+//   } catch (error) {
+//     console.error("Error fetching assigned tasks:", error);
+//     return res
+//       .status(500)
+//       .json({ success: false, message: "Internal Server Error" });
+//   }
+// });
 
 const PORT = process.env.PORT || 8000;
 connectMongoDb(process.env.MONGO_URL).then(() => {
