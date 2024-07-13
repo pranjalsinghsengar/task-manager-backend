@@ -11,7 +11,7 @@ const SigninHandler = async (req, res) => {
         user: existingUser,
       });
     }
-    const newUser = new user({ firstName, lastName, email, password });
+    const newUser = new User({ firstName, lastName, email, password });
     if (newUser) {
       const savedUser = await newUser.save();
       res.status(201).json({ success: true, user: savedUser });
