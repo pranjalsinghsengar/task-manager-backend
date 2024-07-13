@@ -38,6 +38,10 @@ const TaskSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       default: null,
     },
+    assinedByName: {
+      type: String,
+      default: null,
+    },
     assinedTo: {
       type: String,
       default: null,

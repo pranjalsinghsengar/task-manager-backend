@@ -34,6 +34,10 @@ const AssinedTaskSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    assinedByName: {
+      type: String,
+      required: true,
+    },
     assinedTo: {
       type: String,
       required: true,

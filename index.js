@@ -64,9 +64,13 @@ app.post("/assinedtask/create", async (req, res) => {
 
   try {
     const exist = await user.findOne({ email: assinedTo });
+    const userBy = await user.findOne({ _id: assinedBy });
     console.log("exist", exist);
     if (!exist) {
       return res.json({ success: false, message: "mail id does not exist" });
+    }
+    if (!userBy) {
+      return res.json({ success: false, message: "userBy does not exist" });
     }
 
     const NewAssignTask = new Task({
@@ -79,6 +83,7 @@ app.post("/assinedtask/create", async (req, res) => {
       status,
       dateOfCompilation,
       assinedBy,
+      assinedByName: `${userBy?.firstName} ${userBy?.lastName}`,
       assinedTo,
       assiendName: `${exist?.firstName} ${exist?.lastName}`,
       assiendUserId: exist?._id,
